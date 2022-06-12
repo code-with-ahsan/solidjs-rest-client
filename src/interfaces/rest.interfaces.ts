@@ -18,3 +18,10 @@ export interface IRestRequest {
   description: string;
   request: IRequest;
 }
+
+
+export interface IRestResponse {
+  data: any;
+  status: number;
+  headers: any;
+}

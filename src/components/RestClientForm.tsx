@@ -1,5 +1,5 @@
 import { withControl, createFormGroup, createFormControl } from "solid-forms";
-import { createEffect, createSignal, Resource } from "solid-js";
+import { createEffect, Resource } from "solid-js";
 import { IRestRequest } from "../interfaces/rest.interfaces";
 import { TextField } from "./TextField";
 
@@ -12,11 +12,15 @@ const controlFactory = () => {
 };
 
 export const RestClientForm = withControl<
-  { request: Resource<IRestRequest>, formSubmit: Function },
+  {
+    request: Resource<IRestRequest>;
+    formSubmit: Function;
+    formUpdate: Function;
+  },
   typeof controlFactory
 >({
   controlFactory,
-  component: ({control, request, formSubmit}) => {
+  component: ({ control, request, formSubmit, formUpdate }) => {
     const controls = () => control.controls;
 
     createEffect((requestId) => {
@@ -24,27 +28,34 @@ export const RestClientForm = withControl<
         return requestId;
       }
       const { url, method, body } = request().request;
-      controls().body.setValue(body || '');
-      controls().url.setValue(url || '');
-      controls().method.setValue(method || '');
+      controls().body.setValue(body || "");
+      controls().url.setValue(url || "");
+      controls().method.setValue(method || "");
       return request().id;
     });
 
     const bodyValueUpdated = (value: any) => {
       try {
         if (!value) {
+          controls().body.setErrors(null);
           return;
         }
         const pretty = JSON.stringify(JSON.parse(value), undefined, 4);
-        controls().body.setValue(pretty)
+        controls().body.setValue(pretty);
         controls().body.setErrors(null);
       } catch (e) {
-        alert('Invalid JSON');
         controls().body.setErrors({
-          invalidJson: true
-        })
+          invalidJson: true,
+        });
+      } finally {
+        formUpdate(control.value);
       }
-    }
+    };
+
+    const formControlUpdateed = () => {
+      formUpdate;
+    };
+
     return (
       <form
         action=""
@@ -62,19 +73,31 @@ export const RestClientForm = withControl<
           formSubmit(control.value);
         }}
       >
-        <label>
-          {request().name}
-        </label>
+        <label>{request().name}</label>
         <div class="grid grid-cols-1 gap-4">
           <div>
             <label class="sr-only" for="email">
               Email
             </label>
-            <TextField id="url" label="Url" control={controls().url} />
+            <TextField
+              valueUpdated={() => {
+                formUpdate(control.value);
+              }}
+              id="url"
+              label="Url"
+              control={controls().url}
+            />
           </div>
 
           <div>
-            <TextField id="method" label="Method" control={controls().method} />
+            <TextField
+              valueUpdated={() => {
+                formUpdate(control.value);
+              }}
+              id="method"
+              label="Method"
+              control={controls().method}
+            />
           </div>
         </div>
         <div>
@@ -91,7 +114,7 @@ export const RestClientForm = withControl<
           <button
             disabled={!control.isValid}
             type="submit"
-            class="inline-flex items-center disabled:bg-gray-500 justify-center w-full px-5 py-3 text-white bg-black rounded-lg sm:w-auto"
+            class="inline-flex items-center disabled:bg-gray-500 justify-center w-full px-5 py-3 text-white bg-smooth-gray rounded-lg sm:w-auto"
           >
             <span class="font-medium"> Send </span>
 
