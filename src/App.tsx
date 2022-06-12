@@ -6,11 +6,11 @@ import { Router, Routes, Route, Link, Outlet } from "solid-app-router";
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import About from './pages/About';
-import RestClientIndex from './components/RestClient';
+import RestClientIndex from './pages/RestClient';
 import { IRestRequest } from './interfaces/rest.interfaces';
-import { fetchSelectedRequest } from './components/RestClient/[id]';
+import { fetchSelectedRequest } from './pages/RestClient/[id]';
 
-const RestClient = lazy(() => import("./components/RestClient/[id]"));
+const RestClient = lazy(() => import("./pages/RestClient/[id]"));
 
 export const [restRequests, setRestRequests] = createSignal<IRestRequest[]>([{
   id: '1',
@@ -18,7 +18,7 @@ export const [restRequests, setRestRequests] = createSignal<IRestRequest[]>([{
   description: 'Getting scores from server',
   request: {
     method: 'GET',
-    url: 'https://scorer-pro-backend/score/test123',
+    url: 'https://scorer-pro-backend.herokuapp.com/score/game123',
   }
 }, {
   id: '2',
@@ -26,7 +26,7 @@ export const [restRequests, setRestRequests] = createSignal<IRestRequest[]>([{
   description: 'Adding scores to server',
   request: {
     method: 'POST',
-    url: 'https://scorer-pro-backend/score',
+    url: 'https://scorer-pro-backend.herokuapp.com/score',
   }
 }]);
 
@@ -41,7 +41,7 @@ const App: Component = () => {
           <Route path="/about" element={<About/>} />
           <Route path="/" element={<Home />}>
             <Route path="/" element={<RestClientIndex/>} />
-            <Route path="/:id" element={<RestClient data={fetchSelectedRequest}/>} />
+            <Route path="/:id" element={<RestClient/>} data={fetchSelectedRequest} />
           </Route>
         </Routes>
       </main>

@@ -9,7 +9,6 @@ interface HomeProps extends ComponentProps<any> {
 const Home: Component<HomeProps> = (props: HomeProps) => {
   return (
     <div>
-      <h2>Home</h2>
       <div class="flex gap-4">
         <div class="w-60 bg-gray-200 border-gray-300 border p-4">
           <div class='flex justify-end px-4'>
