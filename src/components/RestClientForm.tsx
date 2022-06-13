@@ -140,7 +140,7 @@ export const RestClientForm = withControl<
           <button
             disabled={!props.control.isValid}
             type="submit"
-            class="inline-flex items-center disabled:bg-gray-500 justify-center w-full px-5 py-3 text-white bg-smooth-gray rounded-lg sm:w-auto"
+            class="inline-flex items-center disabled:bg-gray-500 justify-center w-full px-5 py-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg sm:w-auto"
           >
             <span class="font-medium"> {props.actionBtnText} </span>
 

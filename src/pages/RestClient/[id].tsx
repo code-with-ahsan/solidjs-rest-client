@@ -10,14 +10,12 @@ import {
   Suspense,
   Switch,
 } from "solid-js";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import "@alenaksu/json-viewer";
 
 import { RestClientForm } from "../../components/RestClientForm";
 import {
-  IRequest,
   IRestRequest,
-  IRestResponse,
 } from "../../interfaces/rest.interfaces";
 import RestClientOutput from "../../components/RestClientOutput";
 import { restRequests, setRestRequests } from "../../store";
@@ -37,25 +35,21 @@ export const fetchSelectedRequest = ({ params }: RouteDataFuncArgs) => {
 const RestClient: Component = () => {
   const request: Resource<IRestRequest> = useRouteData();
   createEffect(() => {
-    console.log("request", request());
+    mutate(null)
   });
-  const [response, setResponse] = createSignal<IRestResponse | null>(null);
+  const [apiCallParams, setApiCallParams] = createSignal<AxiosRequestConfig>();
+  const [response, {mutate}] = createResource(apiCallParams, () => {
+    if (!apiCallParams()) {
+      return null;
+    }
+    return axios.request(apiCallParams() as any).catch((err) => err.response);
+  });
   const onFormSubmit = async (val: IRestRequest) => {
     const { body, url, method } = val.request;
-    try {
-      const resp = await axios.request({
-        method,
-        url,
-        data: body ? JSON.parse(body) : null,
-      });
-      setResponse(resp);
-    } catch (e: any) {
-      setResponse(e.response);
-    }
+    setApiCallParams({ body, url, method });
   };
 
   const onFormValUpdate = (val: IRestRequest) => {
-    console.log("onFormValUpdate", val);
     setRestRequests((requestsPrev) => {
       if (!requestsPrev) {
         return [
@@ -86,7 +80,7 @@ const RestClient: Component = () => {
   };
 
   return (
-    <div class="flex gap-4 bg-gray-200 p-4 border border-gray-300 min-h-[80vh]">
+    <div class="flex gap-4 bg-gray-200 p-4 border border-gray-300 min-h-[80vh] rounded-lg">
       <div class="flex-1">
         <Suspense fallback={<div>Loading...</div>}>
           <Switch>
@@ -105,8 +99,11 @@ const RestClient: Component = () => {
         </Suspense>
       </div>
       <div class="flex-1">
-        <Show when={response()}>
+        <Show when={!response.loading && response()}>
           <RestClientOutput response={response()} />
+        </Show>
+        <Show when={response.loading}>
+          <div>Loading...</div>
         </Show>
       </div>
     </div>

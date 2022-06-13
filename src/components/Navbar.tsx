@@ -3,10 +3,9 @@ import { Component } from 'solid-js';
 
 const Navbar: Component = () => {
   return (
-    <div class="bg-white py-2 px-4 h-16 flex items-center justify-between">
-      <div class="hero">REST in Peace</div>
+    <div class="bg-purple-600 text-white py-2 px-8 h-16 flex items-center justify-between">
+      <Link class="hover:opacity-50 hero" href='/'>REST in Peace</Link>
       <div class="flex items-center gap-4">
-        <Link class="hover:opacity-50" href='/'>Home</Link>
         <Link class="hover:opacity-50" href='/about'>About</Link>
       </div>
     </div>
