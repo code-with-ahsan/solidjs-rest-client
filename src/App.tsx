@@ -7,7 +7,6 @@ import Navbar from "./components/Navbar";
 import About from "./pages/About";
 import RestClientIndex from "./pages/RestClient";
 import { fetchSelectedRequest } from "./pages/RestClient/[id]";
-
 const RestClient = lazy(() => import("./pages/RestClient/[id]"));
 
 const App: Component = () => {

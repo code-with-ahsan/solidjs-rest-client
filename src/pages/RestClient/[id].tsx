@@ -4,7 +4,11 @@ import {
   createEffect,
   createResource,
   createSignal,
+  Match,
   Resource,
+  Show,
+  Suspense,
+  Switch,
 } from "solid-js";
 import axios from "axios";
 import "@alenaksu/json-viewer";
@@ -36,7 +40,8 @@ const RestClient: Component = () => {
     console.log("request", request());
   });
   const [response, setResponse] = createSignal<IRestResponse | null>(null);
-  const onFormSubmit = async ({ method, url, body }: IRequest) => {
+  const onFormSubmit = async (val: IRestRequest) => {
+    const { body, url, method } = val.request;
     try {
       const resp = await axios.request({
         method,
@@ -49,7 +54,7 @@ const RestClient: Component = () => {
     }
   };
 
-  const onFormValUpdate = (val: IRequest) => {
+  const onFormValUpdate = (val: IRestRequest) => {
     console.log("onFormValUpdate", val);
     setRestRequests((requestsPrev) => {
       if (!requestsPrev) {
@@ -70,8 +75,9 @@ const RestClient: Component = () => {
             ...r,
             request: {
               ...r.request,
-              ...val,
+              ...val.request,
             },
+            name: val.name || r.name
           };
         }
         return r;
@@ -82,14 +88,26 @@ const RestClient: Component = () => {
   return (
     <div class="flex gap-4 bg-gray-200 p-4 border border-gray-300 min-h-[80vh]">
       <div class="flex-1">
-        <RestClientForm
-          request={request}
-          formUpdate={onFormValUpdate}
-          formSubmit={onFormSubmit}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Switch>
+            <Match when={request.loading}>
+              <div>Loading...</div>
+            </Match>
+            <Match when={request()}>
+              <RestClientForm
+                request={request()}
+                formUpdate={onFormValUpdate}
+                formSubmit={onFormSubmit}
+                actionBtnText={'Send'}
+              />
+            </Match>
+          </Switch>
+        </Suspense>
       </div>
       <div class="flex-1">
-        {response() && <RestClientOutput response={response()} />}
+        <Show when={response()}>
+          <RestClientOutput response={response()} />
+        </Show>
       </div>
     </div>
   );

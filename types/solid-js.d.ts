@@ -5,5 +5,8 @@ declare module "solid-js" {
     interface IntrinsicElements {
       "json-viewer": any;
     }
+    interface Directives {
+      clickOutside?: () => void;
+    }
   }
 }

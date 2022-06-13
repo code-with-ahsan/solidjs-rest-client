@@ -33,7 +33,7 @@ const RestClientOutput: Component<RestClientOutputProps> = (
           }}
         </For>
       </div>
-      <json-viewer class="p-4" data={props.response?.data}></json-viewer>
+      <json-viewer class="p-4" data={props.response?.data}>{props.response?.data}</json-viewer>
     </div>
   );
 };

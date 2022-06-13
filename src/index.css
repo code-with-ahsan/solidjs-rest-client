@@ -21,7 +21,7 @@ json-viewer {
   @apply rounded-lg;
 
   /* Background, font and indentation */
-  --background-color: #bg-2a2f3a;
+  --background-color: #2a2f3a;
   --color: #f8f8f2;
   --font-family: monaco, Consolas, 'Lucida Console', monospace;
   --font-size: 1rem;
