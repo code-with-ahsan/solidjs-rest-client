@@ -35,7 +35,7 @@ export const fetchSelectedRequest = ({ params }: RouteDataFuncArgs) => {
 const RestClient: Component = () => {
   const request: Resource<IRestRequest> = useRouteData();
   createEffect(() => {
-    mutate(null)
+    request() && mutate(null)
   });
   const [apiCallParams, setApiCallParams] = createSignal<AxiosRequestConfig>();
   const [response, {mutate}] = createResource(apiCallParams, () => {
