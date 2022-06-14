@@ -1,4 +1,4 @@
-import { Component, ComponentProps, For } from "solid-js";
+import { Component, ComponentProps, For, Show } from "solid-js";
 import { IRestResponse } from "../interfaces/rest.interfaces";
 
 interface RestClientOutputProps extends ComponentProps<any> {
@@ -33,7 +33,9 @@ const RestClientOutput: Component<RestClientOutputProps> = (
           }}
         </For>
       </div>
-      <json-viewer class="p-4" data={props.response?.data}></json-viewer>
+      <Show when={props.response?.data}>
+        <json-viewer class="p-4" data={props.response?.data}></json-viewer>
+      </Show>
     </div>
   );
 };
