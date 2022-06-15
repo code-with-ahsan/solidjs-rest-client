@@ -12,20 +12,22 @@ const RestClient = lazy(() => import("./pages/RestClient/[id]"));
 const App: Component = () => {
   return (
     <Router>
-      <Navbar></Navbar>
-      <main class="px-8 py-4">
-        <Routes>
-          <Route path="/about" element={<About />} />
-          <Route path="/" element={<Home />}>
-            <Route path="/" element={<RestClientIndex />} />
-            <Route
-              path="/:id"
-              element={<RestClient />}
-              data={fetchSelectedRequest}
-            />
-          </Route>
-        </Routes>
-      </main>
+      <div class="flex flex-col h-full min-h-screen">
+        <Navbar></Navbar>
+        <main class="px-8 py-4 flex-1 flex flex-col h-full">
+          <Routes>
+            <Route path="/about" element={<About />} />
+            <Route path="/" element={<Home />}>
+              <Route path="/" element={<RestClientIndex />} />
+              <Route
+                path="/:id"
+                element={<RestClient />}
+                data={fetchSelectedRequest}
+              />
+            </Route>
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 };
