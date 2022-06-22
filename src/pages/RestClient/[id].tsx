@@ -87,7 +87,7 @@ const RestClient: Component = () => {
   };
 
   return (
-    <div class="flex gap-4 min-h-full bg-gray-200 p-4 border border-gray-300 rounded-lg">
+    <div class="flex flex-col md:flex-row  gap-4 min-h-full bg-gray-200 p-4 border border-gray-300 rounded-lg">
       <div class="flex-1">
         <Suspense fallback={<div>Loading...</div>}>
           <Switch>

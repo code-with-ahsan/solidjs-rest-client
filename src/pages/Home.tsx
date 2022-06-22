@@ -19,8 +19,8 @@ const Home: Component = () => {
           }
         }}
       />
-      <div class="flex gap-4 h-full flex-1">
-        <div class="w-1/4 bg-gray-200 min-h-full border-gray-300 border p-4 rounded-lg">
+      <div class="flex flex-col md:flex-row gap-4 h-full flex-1">
+        <div class="w-full md:w-1/4 bg-gray-200 min-h-full border-gray-300 border p-4 rounded-lg">
           <div class="flex justify-between py-4">
             <h1 class="text-sm ">Rest Requests</h1>
             <button
