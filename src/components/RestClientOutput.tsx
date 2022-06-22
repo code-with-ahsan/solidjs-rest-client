@@ -11,7 +11,7 @@ const RestClientOutput: Component<RestClientOutputProps> = (
   return (
     <div>
       <div
-        class="status px-4 py-2 rounded-lg"
+        class="status px-4 py-2 rounded-lg mb-4"
         classList={{
           "bg-green-200 text-green-900 border border-green-900":
             props.response?.status === 200,
@@ -19,20 +19,22 @@ const RestClientOutput: Component<RestClientOutputProps> = (
             props.response?.status !== 200,
         }}
       >
-        {props.response && props.response.status}
+        Code: {props.response && props.response.status}
       </div>
-      <div class="rounded-lg my-4 bg-white px-4 py-2 divide-y">
-        <For each={Object.keys(props.response?.headers)}>
-          {(key: string) => {
-            const value = props.response?.headers[key];
-            return (
-              <div class="header flex py-1 justify-between">
-                <span>{key}:</span> <span>{value}</span>
-              </div>
-            );
-          }}
-        </For>
-      </div>
+      <Show when={props.response?.headers}>
+        <div class="rounded-lg mb-4 bg-white px-4 py-2 divide-y">
+          <For each={Object.keys(props.response?.headers)}>
+            {(key: string) => {
+              const value = props.response?.headers[key];
+              return (
+                <div class="header flex py-1 justify-between">
+                  <span>{key}:</span> <span>{value}</span>
+                </div>
+              );
+            }}
+          </For>
+        </div>
+      </Show>
       <Show when={props.response?.data}>
         <json-viewer class="p-4" data={props.response?.data}></json-viewer>
       </Show>

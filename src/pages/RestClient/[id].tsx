@@ -42,7 +42,14 @@ const RestClient: Component = () => {
     if (!apiCallParams()) {
       return null;
     }
-    return axios.request(apiCallParams() as any).catch((err) => err.response);
+    return axios.request(apiCallParams() as any).catch((err) => {
+      if (!err.response.data) {
+        err.response.data = {
+          message: 'Can not process request'
+        }
+      }
+      return err.response;
+    });
   });
   const onFormSubmit = async (val: IRestRequest) => {
     const { body, url, method } = val.request;
@@ -80,7 +87,7 @@ const RestClient: Component = () => {
   };
 
   return (
-    <div class="flex gap-4 bg-gray-200 p-4 border border-gray-300 min-h-[80vh] rounded-lg">
+    <div class="flex flex-col md:flex-row  gap-4 min-h-full bg-gray-200 p-4 border border-gray-300 rounded-lg">
       <div class="flex-1">
         <Suspense fallback={<div>Loading...</div>}>
           <Switch>

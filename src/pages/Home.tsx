@@ -4,13 +4,12 @@ import RequestModal from "../components/RequestModal";
 import { restRequests, setRestRequests } from "../store";
 import "./Home.css";
 
-
 const Home: Component = () => {
   const [showModal, setShowModal] = createSignal(false);
   const navigate = useNavigate();
   const location = useLocation();
   return (
-    <div>
+    <>
       <RequestModal
         show={showModal()}
         onModalHide={(id: string | null) => {
@@ -20,8 +19,8 @@ const Home: Component = () => {
           }
         }}
       />
-      <div class="flex gap-4">
-        <div class="w-1/4 bg-gray-200 border-gray-300 border p-4 rounded-lg">
+      <div class="flex flex-col md:flex-row gap-4 h-full flex-1">
+        <div class="w-full md:w-1/4 bg-gray-200 min-h-full border-gray-300 border p-4 rounded-lg">
           <div class="flex justify-between py-4">
             <h1 class="text-sm ">Rest Requests</h1>
             <button
@@ -37,7 +36,14 @@ const Home: Component = () => {
             <For each={restRequests()} fallback={<div>Loading...</div>}>
               {(item) => (
                 <Link href={`/${item.id}`} class="relative list__item">
-                  <div class="p-2 hover:bg-gray-300 cursor-pointer pr-12 rounded-lg mb-2" classList={{ 'list__item--active': Boolean(location.pathname === `/${item.id}`) }}>
+                  <div
+                    class="p-2 hover:bg-gray-300 cursor-pointer pr-12 rounded-lg mb-2"
+                    classList={{
+                      "list__item--active": Boolean(
+                        location.pathname === `/${item.id}`
+                      ),
+                    }}
+                  >
                     <div>{item.name}</div>
                     <div class="text-xs break-all">
                       {item.request.method} {item.request.url}
@@ -65,11 +71,11 @@ const Home: Component = () => {
             </For>
           </div>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 min-h-full">
           <Outlet />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
