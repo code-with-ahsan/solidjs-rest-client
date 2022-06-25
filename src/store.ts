@@ -12,7 +12,17 @@ export const [restRequests, setRestRequests] = createStorageSignal<
       description: "Getting scores from server",
       request: {
         method: "GET",
-        url: "https://scorer-pro-backend.herokuapp.com/score/game123",
+        url: "https://scorer-pro3.p.rapidapi.com/score/game123",
+        headers: [
+          {
+            key: "X-RapidAPI-Host",
+            value: "API_HOST_FROM_RAPID_API",
+          },
+          {
+            key: "X-RapidAPI-Key",
+            value: "API_KEY_FROM_RAPID_API",
+          },
+        ],
       },
     },
     {
@@ -21,7 +31,22 @@ export const [restRequests, setRestRequests] = createStorageSignal<
       description: "Adding scores to server",
       request: {
         method: "POST",
-        url: "https://scorer-pro-backend.herokuapp.com/score",
+        url: "https://scorer-pro3.p.rapidapi.com/score",
+        headers: [
+          {
+            key: "X-RapidAPI-Host",
+            value: "API_HOST_FROM_RAPID_API",
+          },
+          {
+            key: "X-RapidAPI-Key",
+            value: "API_KEY_FROM_RAPID_API",
+          },
+        ],
+        body: JSON.stringify({
+          score: 100,
+          gameId: "123",
+          userId: "test123",
+        }),
       },
     },
   ],

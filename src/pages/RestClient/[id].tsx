@@ -43,6 +43,7 @@ const RestClient: Component = () => {
       return null;
     }
     return axios.request(apiCallParams() as any).catch((err) => {
+      console.error(err);
       if (!err.response.data) {
         err.response.data = {
           message: 'Can not process request'
@@ -52,8 +53,15 @@ const RestClient: Component = () => {
     });
   });
   const onFormSubmit = async (val: IRestRequest) => {
-    const { body, url, method } = val.request;
-    setApiCallParams({ body, url, method });
+    const { body, url, method, headers: headersArr } = val.request;
+    // Converting headers array to headers obj
+    const headers = (headersArr || []).reduce((acc, next) => {
+      return {
+        ...acc,
+        [next.key]: next.value
+      }
+    }, {})
+    setApiCallParams({ body, url, method, headers });
   };
 
   const onFormValUpdate = (val: IRestRequest) => {

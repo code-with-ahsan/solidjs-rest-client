@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "solid-app-router";
 import { Component, createSignal, For } from "solid-js";
+import IconButton from "../components/IconButton";
 import RequestModal from "../components/RequestModal";
 import { restRequests, setRestRequests } from "../store";
 import "./Home.css";
@@ -23,14 +24,7 @@ const Home: Component = () => {
         <div class="w-full md:w-1/4 bg-gray-200 min-h-full border-gray-300 border p-4 rounded-lg">
           <div class="flex justify-between py-4">
             <h1 class="text-sm ">Rest Requests</h1>
-            <button
-              onclick={() => setShowModal(true)}
-              role="button"
-              class="w-6 h-6 flex transition-all ease-in-out duration-100 hover:scale-125 items-center justify-center text-white bg-purple-600 border border-purple-600 rounded-full hover:bg-purple-700 active:text-white focus:outline-none focus:ring"
-            >
-              <span class="sr-only"> Add Request </span>
-              <ion-icon name="add"></ion-icon>
-            </button>
+            <IconButton onClick={() => setShowModal(true)} icon="add" label="Add Request" />
           </div>
           <div class="list">
             <For each={restRequests()} fallback={<div>Loading...</div>}>

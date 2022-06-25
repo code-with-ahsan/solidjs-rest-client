@@ -8,6 +8,7 @@ export const TextField: Component<{
   type?: string,
   rows?: number
   id: string
+  class?: string,
   valueUpdated?: (val: any) => void
 }> = (props) => {
   const type = props.type || 'text';
@@ -33,7 +34,7 @@ export const TextField: Component<{
         onblur={onBlur}
         placeholder={props.placeholder}
         id={props.id}
-        class="w-full p-3 text-sm border-gray-200 rounded-lg"
+        class={`w-full p-3 text-sm border-gray-200 rounded-lg ${props.class}`}
       /> : <input
         type="text"
         value={props.control.value}
@@ -41,7 +42,7 @@ export const TextField: Component<{
         onblur={onBlur}
         placeholder={props.placeholder}
         id={props.id}
-        class="w-full p-3 text-sm border-gray-200 rounded-lg"
+        class={`w-full p-3 text-sm border-gray-200 rounded-lg ${props.class}`}
       />}
     </>
   );

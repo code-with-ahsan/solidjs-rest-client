@@ -1,7 +1,31 @@
-import { withControl, createFormGroup, createFormControl } from "solid-forms";
-import { createEffect, Resource } from "solid-js";
+import {
+  withControl,
+  createFormGroup,
+  createFormControl,
+  createFormArray,
+  IFormGroup,
+  ControlId,
+  IFormControl,
+} from "solid-forms";
+import { createEffect, For } from "solid-js";
 import { IRestRequest } from "../interfaces/rest.interfaces";
+import IconButton from "./IconButton";
 import { TextField } from "./TextField";
+
+type HeaderFormGroup = IFormGroup<
+  {
+    key: IFormControl<string, Record<ControlId, any>>;
+    value: IFormControl<string, Record<ControlId, any>>;
+  },
+  Record<ControlId, any>
+>;
+
+const createHeaderGroup = (key = "", value =""): HeaderFormGroup => {
+  return createFormGroup({
+    key: createFormControl(key),
+    value: createFormControl(value),
+  });
+};
 
 const controlFactory = () => {
   return createFormGroup({
@@ -9,8 +33,9 @@ const controlFactory = () => {
     request: createFormGroup({
       method: createFormControl<string>("GET"),
       body: createFormControl<string>(""),
-      url: createFormControl<string>("")
-    })
+      url: createFormControl<string>(""),
+      headers: createFormArray<HeaderFormGroup[]>(),
+    }),
   });
 };
 
@@ -19,7 +44,7 @@ export const RestClientForm = withControl<
     request?: Partial<IRestRequest>;
     formSubmit: Function;
     formUpdate?: Function;
-    actionBtnText: string
+    actionBtnText: string;
   },
   typeof controlFactory
 >({
@@ -27,7 +52,7 @@ export const RestClientForm = withControl<
   component: (props) => {
     const controlGroup = () => props.control.controls;
     const requestControlGroup = () => controlGroup().request.controls;
-    const request = () => props.request
+    const request = () => props.request;
 
     createEffect((requestId) => {
       if (!request || !request()) {
@@ -36,11 +61,21 @@ export const RestClientForm = withControl<
       if (request()?.id === requestId) {
         return requestId;
       }
-      const value = request()?.request;
+      const xhr = request()?.request;
       controlGroup().name.setValue(request()?.name || "");
-      requestControlGroup().body.setValue(value?.body || "");
-      requestControlGroup().url.setValue(value?.url || "");
-      requestControlGroup().method.setValue(value?.method || "");
+      requestControlGroup().body.setValue(xhr?.body || "");
+      requestControlGroup().url.setValue(xhr?.url || "");
+      requestControlGroup().method.setValue(xhr?.method || "");
+      if (xhr?.headers?.length) {
+        for (const header of xhr.headers) {
+          // set timeout is required because the UI otherwise is not updated.
+          setTimeout(() => {
+            props.control.controls.request.controls.headers.push(createHeaderGroup(header.key, header.value))
+          }, 0);
+        }
+      } else {
+        props.control.controls.request.controls.headers.push(createHeaderGroup())
+      }
       return request()?.id;
     });
 
@@ -62,9 +97,31 @@ export const RestClientForm = withControl<
       }
     };
 
-    const formControlUpdateed = () => {
-      // props.formUpdate;
+    const headerValueUpdated = () => {
+      props.formUpdate?.({
+        ...props.control.value,
+        request: {
+          ...props.control.value.request,
+          headers: [
+            ...props.control.controls.request.controls.headers.controls.map((header) => {
+              // For for some reason, the headers.value doesn't reflect the latest changes
+              return {
+                key: header.controls.key.value,
+                value: header.controls.value.value
+              }
+            })
+          ]
+        }
+      });
+    }
+
+    const addHeaderControlGroup = () => {
+      requestControlGroup().headers.push(createHeaderGroup());
     };
+
+    const removeHeaderControlGroup = (control: HeaderFormGroup) => {
+      requestControlGroup().headers.removeControl(control)
+    }
 
     return (
       <form
@@ -80,57 +137,114 @@ export const RestClientForm = withControl<
         }}
         onSubmit={(e) => {
           e.preventDefault();
-          props.formSubmit(props.control.value);
+          const headersArr = props.control.controls.request.controls.headers;
+          const headers = headersArr.controls.map((header) => {
+            return {
+              key: header.controls.key.value,
+              value: header.controls.value.value,
+            };
+          }, {});
+          const params = {
+            ...props.control.value,
+            request: {
+              ...props.control.value.request,
+              headers,
+            },
+          };
+          props.formSubmit(params);
         }}
       >
         <div class="grid grid-cols-1 gap-4">
           <div>
-            <label class="sr-only" for="email">
+            <label for="name" class="mb-4 block">
               Name
             </label>
             <TextField
               valueUpdated={() => {
                 props.formUpdate?.(props.control.value);
               }}
-              placeholder='name'
+              placeholder="name"
               id="name"
               label="Name"
               control={controlGroup().name}
             />
           </div>
           <div>
-            <label class="sr-only" for="email">
-              Email
+            <label for="url" class="mb-4 block">
+              URL
             </label>
             <TextField
               valueUpdated={() => {
                 props.formUpdate?.(props.control.value);
               }}
-              placeholder='url'
+              placeholder="url"
               id="url"
               label="Url"
               control={requestControlGroup().url}
             />
           </div>
 
+          <div class="flex justify-between items-center">
+            <label class="my-4 block">Headers</label>
+            <IconButton
+              onClick={() => addHeaderControlGroup()}
+              icon="add"
+              label="Add Header"
+            />
+          </div>
+          <div class="w-full flex flex-col items-end gap-4 divide-y divide-solid divide-purple-500">
+            <For each={requestControlGroup().headers.controls}>
+              {(_, acc) => {
+                const controls = () =>
+                  props.control.controls.request.controls.headers.controls[
+                    acc()
+                  ].controls;
+                return (
+                  <div class={`w-full flex flex-col gap-4 items-end ${acc() > 0 && 'pt-4'}`}>
+                    <TextField
+                      valueUpdated={headerValueUpdated}
+                      id={`control_key_${acc()}`}
+                      label="Header Key"
+                      placeholder="header"
+                      control={controls().key}
+                    />
+                    <TextField
+                      valueUpdated={headerValueUpdated}
+                      id={`control_value_${acc()}`}
+                      label="Header Value"
+                      placeholder="value"
+                      control={controls().value}
+                    />
+                    {acc() > 0 && <IconButton onClick={() => {
+                      removeHeaderControlGroup(_)
+                      headerValueUpdated()
+                    }} icon="trash" label="delete header" />}
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+
           <div>
+            <label class="my-4 block">Method</label>
             <TextField
               valueUpdated={() => {
                 props.formUpdate?.(props.control.value);
               }}
               id="method"
               label="Method"
-              placeholder='method'
+              placeholder="method"
               control={requestControlGroup().method}
             />
           </div>
         </div>
         <div>
+          <label class="my-4 block">Body</label>
           <TextField
             id="body"
             type="textarea"
             label="Body"
-            placeholder='body'
+            placeholder="body"
             control={requestControlGroup().body}
             valueUpdated={bodyValueUpdated}
           />
