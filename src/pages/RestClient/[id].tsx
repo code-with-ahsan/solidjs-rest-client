@@ -55,12 +55,16 @@ const RestClient: Component = () => {
   const onFormSubmit = async (val: IRestRequest) => {
     const { body, url, method, headers: headersArr } = val.request;
     // Converting headers array to headers obj
-    const headers = (headersArr || []).reduce((acc, next) => {
-      return {
-        ...acc,
-        [next.key]: next.value
-      }
-    }, {})
+    const headers = (headersArr || [])
+      .filter((header) => {
+        return Boolean(header.key && header.value);
+      })
+      .reduce((acc, next) => {
+        return {
+          ...acc,
+          [next.key]: next.value,
+        };
+      }, {});
     setApiCallParams({ body, url, method, headers });
   };
 
