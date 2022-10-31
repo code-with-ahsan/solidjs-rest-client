@@ -61,20 +61,24 @@ export const RestClientForm = withControl<
       if (request()?.id === requestId) {
         return requestId;
       }
-      const xhr = request()?.request;
+      const req = request()?.request;
       controlGroup().name.setValue(request()?.name || "");
-      requestControlGroup().body.setValue(xhr?.body || "");
-      requestControlGroup().url.setValue(xhr?.url || "");
-      requestControlGroup().method.setValue(xhr?.method || "");
-      if (xhr?.headers?.length) {
-        for (const header of xhr.headers) {
+      requestControlGroup().body.setValue(req?.body || "");
+      requestControlGroup().url.setValue(req?.url || "");
+      requestControlGroup().method.setValue(req?.method || "");
+      if (req?.headers?.length) {
+        for (const header of req.headers) {
           // set timeout is required because the UI otherwise is not updated.
           setTimeout(() => {
-            props.control.controls.request.controls.headers.push(createHeaderGroup(header.key, header.value))
+            props.control.controls.request.controls.headers.push(
+              createHeaderGroup(header.key, header.value)
+            );
           }, 0);
         }
       } else {
-        props.control.controls.request.controls.headers.push(createHeaderGroup())
+        props.control.controls.request.controls.headers.push(
+          createHeaderGroup()
+        );
       }
       return request()?.id;
     });
