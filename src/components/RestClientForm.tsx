@@ -29,7 +29,12 @@ const createHeaderGroup = (key = "", value =""): HeaderFormGroup => {
 
 const controlFactory = () => {
   return createFormGroup({
-    name: createFormControl<string>("New Request"),
+    name: createFormControl<string>("New Request", {
+      required: true,
+      validators: (val: string) => {
+        return !val.length ? {isMissing: true} : null;
+      }
+    }),
     request: createFormGroup({
       method: createFormControl<string>("GET"),
       body: createFormControl<string>(""),
